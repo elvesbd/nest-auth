@@ -17,7 +17,7 @@ export class AuthController {
   @UseGuards(JwtGuard, RoleGuard)
   @Get('test')
   teste(@Req() req) {
-    console.log(req);
+    console.log(req.user);
     return {
       name: 'Elves',
     };
