@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 const users = [
   {
@@ -20,7 +22,24 @@ const users = [
 
 @Injectable()
 export class AuthService {
+  constructor(private readonly jwtService: JwtService) {}
+
   login(username, password) {
-    console.log(username, password);
+    const user = this.validateCredentials(username, password);
+
+    const payload = {
+      sub: user.id,
+      username: user.username,
+    };
+    return this.jwtService.sign(payload);
+  }
+
+  validateCredentials(username, password) {
+    const user = users.find(
+      (user) =>
+        user.username === username &&
+        bcrypt.compareSync(password, user.password),
+    );
+    return user;
   }
 }
